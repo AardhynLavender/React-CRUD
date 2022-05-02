@@ -1,26 +1,23 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+/**
+ * @name          App
+ * @version       1.0.0
+ * 
+ * @fileoverview  Root component for Recipe Repository Application.
+ */
 
-function App() {
+import React, { ReactElement } from 'react';
+
+/**
+ * Application Component, root of component tree
+ */
+const App = () : ReactElement => {
   return (
     <div className="App">
       <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
+        <h1>Recipe Repository</h1>
       </header>
     </div>
-  );
+  )
 }
 
-export default App;
+export default App
