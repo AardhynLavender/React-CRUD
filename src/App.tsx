@@ -6,6 +6,7 @@
  */
 
 import React, { ReactElement } from 'react'
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 
 import Header from './components/header'
 
@@ -15,9 +16,16 @@ import Header from './components/header'
 const App = (): ReactElement => {
   return (
     <div className="App">
-      <header className="App-header">
+      <Router>
         <Header />
-      </header>
+        <Routes>
+          <Route path="/login" />
+          <Route path="/ingredients" element={<h1>Ingredients</h1>} />
+          <Route path="/utensils" element={<h1>Utensils</h1>} />
+          <Route path="/components" element={<h1>Components</h1>} />
+          <Route path="/recipes" element={<h1>Recipes</h1>} />
+        </Routes>
+      </Router>
     </div>
   )
 }

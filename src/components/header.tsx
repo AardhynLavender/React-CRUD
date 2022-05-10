@@ -20,13 +20,15 @@ const Header = (): ReactElement => {
   const toggle = (): void => setOpen(!open)
 
   return (
-    <Navbar color="light" light expand="lg">
-      <NavbarBrand href="/">{title}</NavbarBrand>
-      <NavbarToggler onClick={toggle} />
-      <Collapse isOpen={open} navbar>
-        <Navigation />
-      </Collapse>
-    </Navbar>
+    <header>
+      <Navbar color="light" light expand="lg">
+        <NavbarBrand href="/">{title}</NavbarBrand>
+        <NavbarToggler onClick={toggle} />
+        <Collapse isOpen={open} navbar>
+          <Navigation />
+        </Collapse>
+      </Navbar>
+    </header>
   )
 }
 

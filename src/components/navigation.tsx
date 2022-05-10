@@ -17,6 +17,18 @@ const Navigation = (): ReactElement => {
       <NavItem>
         <NavLink href="/login">Login</NavLink>
       </NavItem>
+      <NavItem>
+        <NavLink href="/ingredients">Ingredients</NavLink>
+      </NavItem>
+      <NavItem>
+        <NavLink href="/utensils">Utensils</NavLink>
+      </NavItem>
+      <NavItem>
+        <NavLink href="/components">Components</NavLink>
+      </NavItem>
+      <NavItem>
+        <NavLink href="/recipes">Recipes</NavLink>
+      </NavItem>
     </Nav>
   )
 }
