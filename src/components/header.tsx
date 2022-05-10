@@ -10,7 +10,6 @@ import React, { ReactElement, useState } from 'react'
 import { Collapse, Navbar, NavbarToggler, NavbarBrand } from 'reactstrap'
 
 import Navigation from './navigation'
-import CrudTable from './table'
 
 /**
  * Application Component, root of component tree

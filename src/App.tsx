@@ -8,7 +8,6 @@
 import React, { ReactElement } from 'react'
 
 import Header from './components/header'
-import CrudTable from './components/table'
 
 /**
  * Application Component, root of component tree
@@ -18,7 +17,6 @@ const App = (): ReactElement => {
     <div className="App">
       <header className="App-header">
         <Header />
-        <CrudTable />
       </header>
     </div>
   )
