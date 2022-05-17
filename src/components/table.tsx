@@ -7,15 +7,21 @@
 
 import React, { ReactElement, useEffect, useState } from 'react'
 import { Table } from 'reactstrap'
+import { ToSentenceCase } from '../util/string'
 
 /**
  * Properties for this Component
  */
 interface IProps {
   name?: string
-  columns: Array<string>
-  data?: Array<object>
+  attributes: Array<string>
+  records?: Array<object>
 }
+
+/**
+ * An object indexed by a string
+ */
+type TStringIndexed = { [key: string]: any }
 
 /**
  * Displays provided data in a table
@@ -25,34 +31,40 @@ interface IProps {
 const TableView = (props: IProps): ReactElement => {
   // extract properties
   const name: string = props.name || 'untitled'
-  const columns: Array<string> = props.columns
-  const data: Array<object> = props.data || []
+  const attributes: Array<string> = props.attributes
+  const records: Array<object> = props.records || []
 
   return (
-    <>
-      <br />
-      <h2>{name}</h2>
+    <section style={{ margin: '0 auto', width: '100%', maxWidth: '1000px' }}>
+      <h2 style={{ marginBlock: '1em' }}>{ToSentenceCase(name)}</h2>
       <Table>
         <thead>
           <tr>
-            {/* Create column headings */}
-            {columns.map((heading) => (
-              <th>{heading}</th>
+            {attributes.map((attribute) => (
+              <th>{ToSentenceCase(attribute)}</th>
             ))}
           </tr>
         </thead>
         <tbody>
-          {/* Create records */}
-          {data.map((record: object) => (
-            <tr>
-              {Object.values(record).map((attribute: string) => (
-                <td>{attribute}</td>
+          {records.length == 0
+            ? 'loading...' // TODO replace with fancier loading animation
+            : records.map((record: TStringIndexed) => (
+                <tr>
+                  {attributes.map((attribute: string) => {
+                    const datum: any = record[attribute]
+                    return (
+                      <td>
+                        {typeof datum === 'string'
+                          ? record[attribute].toLowerCase()
+                          : datum || ''}
+                      </td>
+                    )
+                  })}
+                </tr>
               ))}
-            </tr>
-          ))}
         </tbody>
       </Table>
-    </>
+    </section>
   )
 }
 
