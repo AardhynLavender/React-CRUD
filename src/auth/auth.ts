@@ -6,6 +6,8 @@
  */
 
 import axios from 'axios'
+import { API_BASE } from '../App'
+import { AxiosResponse } from 'axios'
 
 /**
  * Relevant HTTP codes
@@ -44,33 +46,36 @@ export const Authenticate = async (
   credentials: ICredentials,
   endpoint: string
 ): Promise<AuthState> => {
-  // promise a state
-  return new Promise(async (resolve, reject) => {
-    try {
-      // post credentials to endpoint
-      const response = await axios.post(endpoint, credentials)
+  // post credentials to endpoint
+  try {
+    const response: AxiosResponse = await axios.post(endpoint, credentials)
+    sessionStorage.setItem('token', response.data.token) // authenticate this session
+    return AuthState.Valid
+  } catch (err: any) {
+    if (err.response.status === Code.Unauthorized) return AuthState.Invalid
+    else return AuthState.Inscrutable
+  }
+}
 
-      // determine state
-      if (response.status === Code.Success) {
-        resolve(AuthState.Valid)
-        sessionStorage.setItem('token', response.data.token) // authenticate this session
-      } else if (response.status === Code.Unauthorized)
-        reject(AuthState.Invalid)
-    } catch (error) {
-      reject(AuthState.Inscrutable)
-    }
-  })
+/**
+ * Revokes the session authentication
+ */
+export const Revoke = async () => {
+  try {
+    const response: AxiosResponse = await axios.get(`${API_BASE}/logout`)
+    if (response.status === Code.Success) sessionStorage.clear()
+  } catch (error: any) {
+    console.error(error)
+  }
 }
 
 /**
  * Get authentication if it exists
- * @returns promises a string containing authentication
+ * @returns the bearer token if it exists
  */
-export const GetAuth = (): Promise<string> => {
-  return new Promise((resolve, reject) => {
-    const prefix: string = 'Bearer '
-    const token: string | null = sessionStorage.getItem('token')
-    if (token) resolve(prefix + token)
-    else reject()
-  })
+export const GetAuth = (): string | null => {
+  const prefix: string = 'Bearer '
+  const token: string | null = sessionStorage.getItem('token')
+  if (token) return prefix + token
+  else return null
 }

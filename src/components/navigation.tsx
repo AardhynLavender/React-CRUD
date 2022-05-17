@@ -8,27 +8,42 @@
 import React, { ReactElement } from 'react'
 import { Nav, NavItem, NavLink } from 'reactstrap'
 
+interface IProps {
+  authenticated: boolean
+  logout: () => void
+}
+
 /**
- *  Navigation links and
+ *  Navigation links auth dependant
  */
-const Navigation = (): ReactElement => {
+const Navigation = (props: IProps): ReactElement => {
   return (
     <Nav className="ms-auto" navbar>
-      <NavItem>
-        <NavLink href="/login">Login</NavLink>
-      </NavItem>
-      <NavItem>
-        <NavLink href="/ingredients">Ingredients</NavLink>
-      </NavItem>
-      <NavItem>
-        <NavLink href="/utensils">Utensils</NavLink>
-      </NavItem>
-      <NavItem>
-        <NavLink href="/components">Components</NavLink>
-      </NavItem>
-      <NavItem>
-        <NavLink href="/recipes">Recipes</NavLink>
-      </NavItem>
+      {props.authenticated ? (
+        <>
+          <NavItem>
+            <NavLink href="/ingredients">Ingredients</NavLink>
+          </NavItem>
+          <NavItem>
+            <NavLink href="/utensils">Utensils</NavLink>
+          </NavItem>
+          <NavItem>
+            <NavLink href="/components">Components</NavLink>
+          </NavItem>
+          <NavItem>
+            <NavLink href="/recipes">Recipes</NavLink>
+          </NavItem>
+          <NavItem>
+            <NavLink onClick={props.logout}>Logout</NavLink>
+          </NavItem>
+        </>
+      ) : (
+        <>
+          <NavItem>
+            <NavLink href="/login">Login</NavLink>
+          </NavItem>
+        </>
+      )}
     </Nav>
   )
 }
