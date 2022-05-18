@@ -6,7 +6,7 @@
  */
 
 import React, { ReactElement, useEffect, useState } from 'react'
-import { Table } from 'reactstrap'
+import { Alert, Table } from 'reactstrap'
 import { ToSentenceCase } from '../util/string'
 
 /**
@@ -35,8 +35,7 @@ const TableView = (props: IProps): ReactElement => {
   const records: Array<object> = props.records || []
 
   return (
-    <section style={{ margin: '0 auto', width: '100%', maxWidth: '1000px' }}>
-      <h2 style={{ marginBlock: '1em' }}>{ToSentenceCase(name)}</h2>
+    <>
       <Table>
         <thead>
           <tr>
@@ -46,25 +45,24 @@ const TableView = (props: IProps): ReactElement => {
           </tr>
         </thead>
         <tbody>
-          {records.length == 0
-            ? 'loading...' // TODO replace with fancier loading animation
-            : records.map((record: TStringIndexed) => (
-                <tr>
-                  {attributes.map((attribute: string) => {
-                    const datum: any = record[attribute]
-                    return (
-                      <td>
-                        {typeof datum === 'string'
-                          ? record[attribute].toLowerCase()
-                          : datum || ''}
-                      </td>
-                    )
-                  })}
-                </tr>
-              ))}
+          {records.map((record: TStringIndexed) => (
+            <tr>
+              {attributes.map((attribute: string) => {
+                const datum: any = record[attribute]
+                return (
+                  <td>
+                    {typeof datum === 'string'
+                      ? record[attribute].toLowerCase()
+                      : datum || ''}
+                  </td>
+                )
+              })}
+            </tr>
+          ))}
         </tbody>
       </Table>
-    </section>
+      {records.length == 0 ? <Alert>Loading {props.name}...</Alert> : <></>}
+    </>
   )
 }
 
