@@ -51,9 +51,46 @@ const App = (): ReactElement => {
                   />
                 }
               />
-              <Route path="/utensils" element={<h1>Utensils</h1>} />
-              <Route path="/components" element={<h1>Components</h1>} />
-              <Route path="/recipes" element={<h1>Recipes</h1>} />
+              <Route
+                path="/utensils"
+                element={
+                  <Collection
+                    name="utensils"
+                    schema={[
+                      'name',
+                      'material',
+                      'size',
+                      'measurement',
+                      'description',
+                    ]}
+                  />
+                }
+              />
+              <Route
+                path="/components"
+                element={
+                  <Collection
+                    name="components"
+                    schema={[
+                      'name',
+                      'author',
+                      'condiments',
+                      'utensils',
+                      'method',
+                      'results',
+                    ]}
+                  />
+                }
+              />
+              <Route
+                path="/recipes"
+                element={
+                  <Collection
+                    name="recipes"
+                    schema={['name', 'author', 'components', 'details']}
+                  />
+                }
+              />
             </>
           ) : (
             <>

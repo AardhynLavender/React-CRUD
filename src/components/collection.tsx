@@ -6,7 +6,7 @@
  */
 
 import React, { ReactElement, useEffect, useState } from 'react'
-import CrudTable from './table'
+import TableView from './table'
 import Axios, { AxiosResponse } from 'axios'
 import { API_BASE } from '../App'
 import { Code, GetAuth } from '../auth/auth'
@@ -25,6 +25,9 @@ export const Collection = (props: IProps): ReactElement => {
   const [Records, SetRecords] = useState<Array<object> | undefined>([])
   const [Error, SetError] = useState<boolean>(false)
 
+  /**
+   * Fetch data from API
+   */
   const fetch = () => {
     Axios.get(`${API_BASE}/api/v1/${props.name}`, {
       headers: {
@@ -32,14 +35,17 @@ export const Collection = (props: IProps): ReactElement => {
       },
     })
       .then((res: AxiosResponse) => {
+        console.log('Resource acquisition successful')
         if (res.status === Code.Success) SetRecords(res.data.data)
       })
       .catch((error: any) => {
+        console.error('Unable to acquire resource!')
         SetError(true)
       })
   }
 
   useEffect(() => {
+    // Fetch data when ComponentDidMount
     fetch()
   }, [])
 
@@ -49,7 +55,7 @@ export const Collection = (props: IProps): ReactElement => {
         margin: '2em auto',
         paddingInline: '2em',
         width: '100%',
-        maxWidth: '1000px',
+        maxWidth: '1200px',
       }}
     >
       <h2 style={{ marginBlock: '1em' }}>{ToSentenceCase(props.name)}</h2>
@@ -58,7 +64,7 @@ export const Collection = (props: IProps): ReactElement => {
           There was a problem retrieving {props.name}!
         </Alert>
       ) : (
-        <CrudTable
+        <TableView
           name={props.name}
           attributes={props.schema}
           records={Records}

@@ -29,10 +29,19 @@ type TStringIndexed = { [key: string]: any }
  * @returns Table View Component
  */
 const TableView = (props: IProps): ReactElement => {
-  // extract properties
-  const name: string = props.name || 'untitled'
   const attributes: Array<string> = props.attributes
   const records: Array<object> = props.records || []
+
+  /**
+   * determines the best way to display arbitrary data in string form
+   * @param data to determine
+   * @returns stringified data
+   */
+  const Stringify = (data: any): string => {
+    if (Array.isArray(data)) return data.join('\n')
+    else if (data) return ToSentenceCase(data)
+    else return ''
+  }
 
   return (
     <>
@@ -47,16 +56,9 @@ const TableView = (props: IProps): ReactElement => {
         <tbody>
           {records.map((record: TStringIndexed) => (
             <tr>
-              {attributes.map((attribute: string) => {
-                const datum: any = record[attribute]
-                return (
-                  <td>
-                    {typeof datum === 'string'
-                      ? record[attribute].toLowerCase()
-                      : datum || ''}
-                  </td>
-                )
-              })}
+              {attributes.map((attribute: string) => (
+                <td>{Stringify(record[attribute])}</td>
+              ))}
             </tr>
           ))}
         </tbody>
