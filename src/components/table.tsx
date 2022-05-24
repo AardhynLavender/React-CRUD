@@ -6,8 +6,15 @@
  */
 
 import React, { ReactElement, useEffect, useState } from 'react'
-import { Alert, Table } from 'reactstrap'
+import { Alert, Button, ButtonGroup, Spinner, Table } from 'reactstrap'
+import { Interaction } from '../util/Interaction'
 import { ToSentenceCase } from '../util/string'
+import { Record } from '../util/record'
+
+/**
+ * An action performed on a table
+ */
+type Mutation = (id: number) => Promise<boolean>
 
 /**
  * Properties for this Component
@@ -15,7 +22,10 @@ import { ToSentenceCase } from '../util/string'
 interface IProps {
   name?: string
   attributes: Array<string>
-  records?: Array<object>
+  records?: Array<Record>
+  mode: Interaction
+  handleDelete: Mutation
+  handleUpdate: Mutation
 }
 
 /**
@@ -30,7 +40,7 @@ type TStringIndexed = { [key: string]: any }
  */
 const TableView = (props: IProps): ReactElement => {
   const attributes: Array<string> = props.attributes
-  const records: Array<object> = props.records || []
+  const records: Array<object> | undefined = props.records
 
   /**
    * determines the best way to display arbitrary data in string form
@@ -43,27 +53,88 @@ const TableView = (props: IProps): ReactElement => {
     else return ''
   }
 
+  /**
+   * Handle a delete request
+   * @param id of record to request deletion
+   */
+  const HandleDelete = (id: number): void => {
+    if (
+      confirm(
+        `Delete record ${id} from the ${ToSentenceCase(
+          props.name || 'untitled'
+        )} collection?`
+      )
+    ) {
+      props.handleDelete(id).then((success) => {
+        if (success) {
+          // toast user
+        }
+      })
+    } else {
+      // toast user
+    }
+  }
+
   return (
     <>
       <Table>
         <thead>
-          <tr>
-            {attributes.map((attribute) => (
-              <th>{ToSentenceCase(attribute)}</th>
+          <tr style={{ width: 0.1, whiteSpace: 'nowrap' }}>
+            <th key="0">Local ID</th>
+            {attributes.map((attribute: string, key: number) => (
+              <th key={key}>{ToSentenceCase(attribute)}</th>
             ))}
           </tr>
         </thead>
         <tbody>
-          {records.map((record: TStringIndexed) => (
-            <tr>
-              {attributes.map((attribute: string) => (
-                <td>{Stringify(record[attribute])}</td>
-              ))}
-            </tr>
-          ))}
+          {records ? (
+            records.map((record: TStringIndexed, id: number) => (
+              <tr key={id}>
+                <td key={0}>{id}</td>
+                {/* Display attributes */}
+                {attributes.map((attribute: string, key: number) => (
+                  <td key={key}>{Stringify(record[attribute])}</td>
+                ))}
+                {/* Display Edit or Delete button */}
+                {props.mode != Interaction.Visual ? (
+                  <td key={attributes.length} style={{ width: 50 }}>
+                    {props.mode === Interaction.Edit ? (
+                      <Button color="warning">Edit</Button>
+                    ) : props.mode === Interaction.Delete ? (
+                      <Button
+                        color="danger"
+                        onClick={(): void => HandleDelete(id)}
+                      >
+                        Delete
+                      </Button>
+                    ) : (
+                      <></>
+                    )}
+                  </td>
+                ) : (
+                  <></>
+                )}
+              </tr>
+            ))
+          ) : (
+            <></>
+          )}
         </tbody>
       </Table>
-      {records.length == 0 ? <Alert>Loading {props.name}...</Alert> : <></>}
+      {/* Display loading alert while awaiting response */}
+      {!records ? (
+        <Alert style={{ display: 'flex', gap: '1em', alignItems: 'center' }}>
+          <Spinner animation="border" />
+          Loading {props.name}
+        </Alert>
+      ) : !records.length ? (
+        // No data was present...
+        <Alert color="primary">
+          <em>No {props.name} found</em>
+        </Alert>
+      ) : (
+        <></>
+      )}
     </>
   )
 }

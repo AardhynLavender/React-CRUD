@@ -10,8 +10,10 @@ import TableView from './table'
 import Axios, { AxiosResponse } from 'axios'
 import { API_BASE } from '../App'
 import { Code, GetAuth } from '../auth/auth'
-import { Alert } from 'reactstrap'
+import { Alert, Button, ButtonGroup } from 'reactstrap'
 import { ToSentenceCase } from '../util/string'
+import { Interaction } from '../util/Interaction'
+import { Record } from '../util/record'
 
 /**
  * Properties for this Component
@@ -22,30 +24,97 @@ interface IProps {
 }
 
 export const Collection = (props: IProps): ReactElement => {
-  const [Records, SetRecords] = useState<Array<object> | undefined>([])
+  const [Mode, SetMode] = useState<Interaction>(Interaction.Visual)
+  const [Records, SetRecords] = useState<Array<Record> | undefined>(undefined)
   const [Error, SetError] = useState<boolean>(false)
 
+  const API_COLLECTION_BASE: string = `${API_BASE}/api/v1/${props.name}/`
+
   /**
-   * Fetch data from API
+   * Read data from API
    */
   const fetch = () => {
-    Axios.get(`${API_BASE}/api/v1/${props.name}`, {
+    Axios.get(API_COLLECTION_BASE, {
       headers: {
         authorization: GetAuth() || '',
       },
     })
       .then((res: AxiosResponse) => {
         console.log('Resource acquisition successful')
-        if (res.status === Code.Success) SetRecords(res.data.data)
+
+        // empty collections return a message rather than empty array... Grrr!
+        const data: Array<Record> | string = res.data.data
+        if (res.status === Code.Success)
+          SetRecords(typeof data === 'string' ? [] : data)
       })
       .catch((error: any) => {
-        console.error('Unable to acquire resource!')
+        console.error(error || 'Unable to acquire resource!')
         SetError(true)
       })
   }
 
+  /**
+   * Promise to delete the document associated with the nth
+   * (id) record on the display
+   * @param id (local) of item to delete
+   * @returns success of operation
+   */
+  const DeleteRecord = async (id: number): Promise<boolean> => {
+    const _id = Records ? Records[id]._id : undefined
+    try {
+      // request deletion of resource
+      if (_id) {
+        const response: AxiosResponse = await Axios.delete(
+          API_COLLECTION_BASE + _id,
+          {
+            headers: {
+              authorization: GetAuth() || '',
+            },
+          }
+        )
+
+        if (response.status === Code.Success) {
+          fetch() // refresh rendered collection data
+          return true
+        }
+      }
+
+      throw 'response status was not successful!'
+    } catch (error: any) {
+      console.error(error || 'Unable to delete resource!')
+      return false
+    }
+  }
+
+  /**
+   * Promise to update a record in the collection
+   * @param id (local) of item to delete
+   * @returns success of operation
+   */
+  const MutateRecord = async (id: number): Promise<boolean> => {
+    throw 'Unimplemented Symbol'
+  }
+
+  /**
+   * Toggle the interaction to Edit mode
+   * @returns void
+   */
+  const HandleEdit = (): void =>
+    SetMode(Mode === Interaction.Edit ? Interaction.Visual : Interaction.Edit)
+
+  /**
+   * Toggle the interaction to Delete mode
+   * @returns void
+   */
+  const HandleDelete = (): void =>
+    SetMode(
+      Mode === Interaction.Delete ? Interaction.Visual : Interaction.Delete
+    )
+
+  /**
+   * Fetch data when ComponentDidMount
+   */
   useEffect(() => {
-    // Fetch data when ComponentDidMount
     fetch()
   }, [])
 
@@ -56,9 +125,36 @@ export const Collection = (props: IProps): ReactElement => {
         paddingInline: '2em',
         width: '100%',
         maxWidth: '1200px',
+        overflowX: 'scroll',
       }}
     >
-      <h2 style={{ marginBlock: '1em' }}>{ToSentenceCase(props.name)}</h2>
+      <section
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+        }}
+      >
+        <h2 style={{ marginBlock: '1em' }}>{ToSentenceCase(props.name)}</h2>
+        <ButtonGroup style={{ width: '150px' }}>
+          <Button
+            block={true}
+            active={Mode === Interaction.Edit}
+            outline={true}
+            onClick={HandleEdit}
+          >
+            Edit
+          </Button>
+          <Button
+            block={true}
+            active={Mode === Interaction.Delete}
+            outline={true}
+            onClick={HandleDelete}
+          >
+            Delete
+          </Button>
+        </ButtonGroup>
+      </section>
       {Error ? (
         <Alert color="danger">
           There was a problem retrieving {props.name}!
@@ -68,6 +164,9 @@ export const Collection = (props: IProps): ReactElement => {
           name={props.name}
           attributes={props.schema}
           records={Records}
+          mode={Mode}
+          handleDelete={DeleteRecord}
+          handleUpdate={MutateRecord}
         />
       )}
     </section>
