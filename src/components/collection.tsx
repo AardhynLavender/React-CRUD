@@ -14,6 +14,13 @@ import { Alert, Button, ButtonGroup } from 'reactstrap'
 import { ToSentenceCase } from '../util/string'
 import { Interaction } from '../util/Interaction'
 import { Record } from '../util/record'
+import {
+  Paginate,
+  IPageHandle,
+  PaginationController,
+  DEFAULT_PAGE,
+  DEFAULT_PAGE_SIZE,
+} from './pagination'
 
 /**
  * Properties for this Component
@@ -23,6 +30,11 @@ interface IProps {
   schema: Array<string>
 }
 
+/**
+ *
+ * @param props provided the collection name and a desired schema
+ * @returns
+ */
 export const Collection = (props: IProps): ReactElement => {
   const [Mode, SetMode] = useState<Interaction>(Interaction.Visual)
   const [Records, SetRecords] = useState<Array<Record> | undefined>(undefined)
@@ -33,16 +45,21 @@ export const Collection = (props: IProps): ReactElement => {
   /**
    * Read data from API
    */
-  const fetch = () => {
-    Axios.get(API_COLLECTION_BASE, {
-      headers: {
-        authorization: GetAuth() || '',
-      },
-    })
+  const fetch = (page?: number, size?: number) => {
+    Axios.get(
+      `${API_COLLECTION_BASE}?${Paginate(
+        size || DEFAULT_PAGE_SIZE,
+        page || DEFAULT_PAGE
+      )}`,
+      {
+        headers: {
+          authorization: GetAuth() || '',
+        },
+      }
+    )
       .then((res: AxiosResponse) => {
         console.log('Resource acquisition successful')
-
-        // empty collections return a message rather than empty array... Grrr!
+        // data might be a string
         const data: Array<Record> | string = res.data.data
         if (res.status === Code.Success)
           SetRecords(typeof data === 'string' ? [] : data)
@@ -60,9 +77,8 @@ export const Collection = (props: IProps): ReactElement => {
    * @returns success of operation
    */
   const DeleteRecord = async (id: number): Promise<boolean> => {
-    const _id = Records ? Records[id]._id : undefined
+    const _id: string | undefined = Records ? Records[id]._id : undefined
     try {
-      // request deletion of resource
       if (_id) {
         const response: AxiosResponse = await Axios.delete(
           API_COLLECTION_BASE + _id,
@@ -96,6 +112,11 @@ export const Collection = (props: IProps): ReactElement => {
   }
 
   /**
+   * Fetch when component did mount
+   */
+  useEffect(() => fetch(), [])
+
+  /**
    * Toggle the interaction to Edit mode
    * @returns void
    */
@@ -110,13 +131,6 @@ export const Collection = (props: IProps): ReactElement => {
     SetMode(
       Mode === Interaction.Delete ? Interaction.Visual : Interaction.Delete
     )
-
-  /**
-   * Fetch data when ComponentDidMount
-   */
-  useEffect(() => {
-    fetch()
-  }, [])
 
   return (
     <section
@@ -136,6 +150,13 @@ export const Collection = (props: IProps): ReactElement => {
         }}
       >
         <h2 style={{ marginBlock: '1em' }}>{ToSentenceCase(props.name)}</h2>
+        <PaginationController
+          initialState={{ page: DEFAULT_PAGE, size: DEFAULT_PAGE_SIZE }}
+          SetState={(state: IPageHandle) => {
+            fetch(state.page, state.size)
+            console.log(state)
+          }}
+        />
         <ButtonGroup style={{ width: '150px' }}>
           <Button
             block={true}
