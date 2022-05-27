@@ -33,7 +33,7 @@ type Setter = Dispatch<SetStateAction<number>>
  * @returns query param
  */
 export const Paginate = (size: number, page: number): string =>
-  `pageSize=${size}&page=${page}`
+  `?pageSize=${size}&page=${page}`
 
 /**
  * PaginationController properties

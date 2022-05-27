@@ -21,6 +21,7 @@ import {
   DEFAULT_PAGE,
   DEFAULT_PAGE_SIZE,
 } from './pagination'
+import { useParams } from 'react-router-dom'
 
 /**
  * Properties for this Component
@@ -40,17 +41,30 @@ export const Collection = (props: IProps): ReactElement => {
   const [Records, SetRecords] = useState<Array<Record> | undefined>(undefined)
   const [Error, SetError] = useState<boolean>(false)
 
+  const { id } = useParams<string>()
+
   const API_COLLECTION_BASE: string = `${API_BASE}/api/v1/${props.name}/`
 
   /**
    * Read data from API
    */
   const fetch = (page?: number, size?: number) => {
+    // sequential id for document
+    const parsedID: number | undefined = parseInt(id || '')
+
+    const validID: boolean =
+      parsedID != undefined &&
+      typeof parsedID === 'number' &&
+      !isNaN(parsedID) &&
+      parsedID > -1
+
     Axios.get(
-      `${API_COLLECTION_BASE}?${Paginate(
-        size || DEFAULT_PAGE_SIZE,
-        page || DEFAULT_PAGE
-      )}`,
+      `${API_COLLECTION_BASE}${
+        validID
+          ? // sequential ID must be pagination independent
+            ''
+          : Paginate(size || DEFAULT_PAGE_SIZE, page || DEFAULT_PAGE)
+      }`,
       {
         headers: {
           authorization: GetAuth() || '',
@@ -62,7 +76,16 @@ export const Collection = (props: IProps): ReactElement => {
         // data might be a string
         const data: Array<Record> | string = res.data.data
         if (res.status === Code.Success)
-          SetRecords(typeof data === 'string' ? [] : data)
+          SetRecords(
+            typeof data === 'string'
+              ? // return an empty array for no data
+                []
+              : // return a single document if a valid ID is passed
+              validID && parsedID < data.length
+              ? [data[parsedID]]
+              : // else return all data
+                data
+          )
       })
       .catch((error: any) => {
         console.error(error || 'Unable to acquire resource!')

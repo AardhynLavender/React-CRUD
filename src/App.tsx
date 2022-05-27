@@ -35,63 +35,41 @@ const App = (): ReactElement => {
       .catch(() => alert('Failed to revoke Authentication!'))
   }
 
+  /**
+   * Collections to provide
+   */
+  const collections: Record<string, Array<string>> = {
+    ingredients: ['name', 'description', 'brand', 'type'],
+    utensils: ['name', 'material', 'size', 'measurement', 'description'],
+    components: [
+      'name',
+      'author',
+      'condiments',
+      'utensils',
+      'method',
+      'results',
+    ],
+    recipes: ['name', 'author', 'components', 'details'],
+  }
+
   return (
     <div className="App">
       <Router>
         <Header authenticated={LoggedIn} logout={Logout} />
         <Routes>
           {LoggedIn ? (
-            <>
-              <Route
-                path="/ingredients"
-                element={
-                  <Collection
-                    name="ingredients"
-                    schema={['name', 'description', 'brand', 'type']}
-                  />
-                }
-              />
-              <Route
-                path="/utensils"
-                element={
-                  <Collection
-                    name="utensils"
-                    schema={[
-                      'name',
-                      'material',
-                      'size',
-                      'measurement',
-                      'description',
-                    ]}
-                  />
-                }
-              />
-              <Route
-                path="/components"
-                element={
-                  <Collection
-                    name="components"
-                    schema={[
-                      'name',
-                      'author',
-                      'condiments',
-                      'utensils',
-                      'method',
-                      'results',
-                    ]}
-                  />
-                }
-              />
-              <Route
-                path="/recipes"
-                element={
-                  <Collection
-                    name="recipes"
-                    schema={['name', 'author', 'components', 'details']}
-                  />
-                }
-              />
-            </>
+            Object.entries(collections).map(([collection, schema]) => (
+              <Route path={`/${collection}/`}>
+                <Route
+                  path=":id"
+                  element={<Collection name={collection} schema={schema} />}
+                />
+                <Route
+                  path=""
+                  element={<Collection name={collection} schema={schema} />}
+                />
+              </Route>
+            ))
           ) : (
             <>
               <Route path="/login" element={<UserLogin Login={Login} />} />
