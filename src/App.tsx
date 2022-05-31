@@ -49,7 +49,7 @@ const App = (): ReactElement => {
       'method',
       'results',
     ],
-    recipes: ['name', 'author', 'components', 'details'],
+    recipes: ['name', 'author', 'components', 'detail'],
   }
 
   return (

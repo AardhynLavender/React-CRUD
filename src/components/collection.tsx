@@ -13,7 +13,7 @@ import { Code, GetAuth } from '../auth/auth'
 import { Alert, Button, ButtonGroup } from 'reactstrap'
 import { ToSentenceCase } from '../util/string'
 import { Interaction } from '../util/Interaction'
-import { Record } from '../util/record'
+import { IRecord } from '../util/record'
 import {
   Paginate,
   IPageHandle,
@@ -22,6 +22,22 @@ import {
   DEFAULT_PAGE_SIZE,
 } from './pagination'
 import { useParams } from 'react-router-dom'
+
+/**
+ * A specific error
+ */
+interface IError {
+  name: string
+  message: string
+  path: string
+}
+
+/**
+ * A set of errors returned from a PUT
+ */
+export interface IErrorSet {
+  [attribute: string]: IError
+}
 
 /**
  * Properties for this Component
@@ -38,7 +54,7 @@ interface IProps {
  */
 export const Collection = (props: IProps): ReactElement => {
   const [Mode, SetMode] = useState<Interaction>(Interaction.Visual)
-  const [Records, SetRecords] = useState<Array<Record> | undefined>(undefined)
+  const [Records, SetRecords] = useState<Array<IRecord> | undefined>(undefined)
   const [Error, SetError] = useState<boolean>(false)
 
   const { id } = useParams<string>()
@@ -74,7 +90,7 @@ export const Collection = (props: IProps): ReactElement => {
       .then((res: AxiosResponse) => {
         console.log('Resource acquisition successful')
         // data might be a string
-        const data: Array<Record> | string = res.data.data
+        const data: Array<IRecord> | string = res.data.data
         if (res.status === Code.Success)
           SetRecords(
             typeof data === 'string'
@@ -130,8 +146,37 @@ export const Collection = (props: IProps): ReactElement => {
    * @param id (local) of item to delete
    * @returns success of operation
    */
-  const MutateRecord = async (id: number): Promise<boolean> => {
-    throw 'Unimplemented Symbol'
+  const MutateRecord = async (
+    id: number,
+    mutated: IRecord
+  ): Promise<IErrorSet | undefined> => {
+    try {
+      const _id: string | undefined = Records ? Records[id]._id : undefined
+
+      if (!mutated) throw 'mutation was undefined!'
+
+      const response: AxiosResponse = await Axios.put(
+        API_COLLECTION_BASE + _id,
+        mutated,
+        {
+          headers: {
+            authorization: GetAuth() || '',
+          },
+        }
+      )
+
+      fetch() // refresh rendered collection data
+      if (response.status !== Code.Success)
+        throw 'response status was not successful!'
+    } catch (error: any) {
+      // general set of errors
+      const errorSet: IErrorSet | undefined = error.response.data.message
+        .errors || {
+        error: error.response.data.message,
+      }
+      console.log(error)
+      return errorSet
+    }
   }
 
   /**
@@ -160,8 +205,6 @@ export const Collection = (props: IProps): ReactElement => {
       style={{
         margin: '2em auto',
         paddingInline: '2em',
-        width: '100%',
-        maxWidth: '1200px',
         overflowX: 'scroll',
       }}
     >
@@ -177,7 +220,6 @@ export const Collection = (props: IProps): ReactElement => {
           initialState={{ page: DEFAULT_PAGE, size: DEFAULT_PAGE_SIZE }}
           SetState={(state: IPageHandle) => {
             fetch(state.page, state.size)
-            console.log(state)
           }}
         />
         <ButtonGroup style={{ width: '150px' }}>
@@ -209,8 +251,8 @@ export const Collection = (props: IProps): ReactElement => {
           attributes={props.schema}
           records={Records}
           mode={Mode}
-          handleDelete={DeleteRecord}
-          handleUpdate={MutateRecord}
+          HandleDelete={DeleteRecord}
+          HandleUpdate={MutateRecord}
         />
       )}
     </section>

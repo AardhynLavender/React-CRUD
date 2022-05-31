@@ -5,16 +5,13 @@
  * @fileoverview    A component to display data in a table
  */
 
-import React, { ReactElement, useEffect, useState } from 'react'
-import { Alert, Button, ButtonGroup, Spinner, Table } from 'reactstrap'
+import React, { ReactElement, useState, useEffect } from 'react'
+import { Alert, Spinner, Table } from 'reactstrap'
 import { Interaction } from '../util/Interaction'
 import { ToSentenceCase } from '../util/string'
-import { Record } from '../util/record'
-
-/**
- * An action performed on a table
- */
-type Mutation = (id: number) => Promise<boolean>
+import { IRecord } from '../util/record'
+import Record from './record'
+import { IErrorSet } from './collection'
 
 /**
  * Properties for this Component
@@ -22,16 +19,11 @@ type Mutation = (id: number) => Promise<boolean>
 interface IProps {
   name?: string
   attributes: Array<string>
-  records?: Array<Record>
+  records?: Array<IRecord>
   mode: Interaction
-  handleDelete: Mutation
-  handleUpdate: Mutation
+  HandleDelete: (id: number) => Promise<boolean>
+  HandleUpdate: (id: number, mutated: IRecord) => Promise<IErrorSet | undefined>
 }
-
-/**
- * An object indexed by a string
- */
-type TStringIndexed = { [key: string]: any }
 
 /**
  * Displays provided data in a table
@@ -40,24 +32,15 @@ type TStringIndexed = { [key: string]: any }
  */
 const TableView = (props: IProps): ReactElement => {
   const attributes: Array<string> = props.attributes
-  const records: Array<object> | undefined = props.records
+  const records: Array<IRecord> | undefined = props.records
+
+  const [Editing, SetEditing] = useState<number | null>(null)
 
   /**
-   * determines the best way to display arbitrary data in string form
-   * @param data to determine
-   * @returns stringified data
-   */
-  const Stringify = (data: any): string => {
-    if (Array.isArray(data)) return data.join('\n')
-    else if (data) return ToSentenceCase(data)
-    else return ''
-  }
-
-  /**
-   * Handle a delete request
+   * Prompt user for a delete request
    * @param id of record to request deletion
    */
-  const HandleDelete = (id: number): void => {
+  const HandleDelete = (id: number): Promise<boolean> => {
     if (
       confirm(
         `Delete record ${id} from the ${ToSentenceCase(
@@ -65,14 +48,20 @@ const TableView = (props: IProps): ReactElement => {
         )} collection?`
       )
     ) {
-      props.handleDelete(id).then((success) => {
-        if (success) {
-          // toast user
-        }
-      })
-    } else {
-      // toast user
-    }
+      return props.HandleDelete(id)
+    } else throw false
+  }
+
+  /**
+   * Request to set the record being edited
+   * @param id to be edited
+   * @returns if request is granted
+   */
+  const HandleSetEditing = (id: number | null): boolean => {
+    const success: boolean =
+      !id || (records != undefined && id > -1 && id < records.length)
+    if (success) SetEditing(id)
+    return success
   }
 
   return (
@@ -88,33 +77,18 @@ const TableView = (props: IProps): ReactElement => {
         </thead>
         <tbody>
           {records ? (
-            records.map((record: TStringIndexed, id: number) => (
-              <tr key={id}>
-                <td key={0}>{id}</td>
-                {/* Display attributes */}
-                {attributes.map((attribute: string, key: number) => (
-                  <td key={key}>{Stringify(record[attribute])}</td>
-                ))}
-                {/* Display Edit or Delete button */}
-                {props.mode != Interaction.Visual ? (
-                  <td key={attributes.length} style={{ width: 50 }}>
-                    {props.mode === Interaction.Edit ? (
-                      <Button color="warning">Edit</Button>
-                    ) : props.mode === Interaction.Delete ? (
-                      <Button
-                        color="danger"
-                        onClick={(): void => HandleDelete(id)}
-                      >
-                        Delete
-                      </Button>
-                    ) : (
-                      <></>
-                    )}
-                  </td>
-                ) : (
-                  <></>
-                )}
-              </tr>
+            records.map((record: IRecord, id: number) => (
+              <Record
+                key={id}
+                attributes={attributes}
+                record={record}
+                mode={props.mode}
+                SetEditing={HandleSetEditing}
+                HandleDelete={HandleDelete}
+                HandleCommit={props.HandleUpdate}
+                id={id}
+                Editing={Editing}
+              />
             ))
           ) : (
             <></>
