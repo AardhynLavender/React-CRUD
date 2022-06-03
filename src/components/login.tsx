@@ -15,7 +15,7 @@ import React, {
 
 import { Button, Alert, Form, FormGroup, Input } from 'reactstrap'
 import { API_BASE } from '../App'
-import { Authenticate, AuthState, GetAuth, ICredentials } from '../auth/auth'
+import { Authenticate, AuthState, GetAuth } from '../auth/auth'
 
 interface IProps {
   Login: () => void
@@ -24,7 +24,7 @@ interface IProps {
 /**
  * Login form Component
  */
-export const UserLogin = (props: IProps): ReactElement => {
+const Login = (props: IProps): ReactElement => {
   // credentials
   const [Email, SetEmail] = useState<string>('')
   const [Password, SetPassword] = useState<string>('')
@@ -105,3 +105,5 @@ export const UserLogin = (props: IProps): ReactElement => {
     </section>
   )
 }
+
+export default Login

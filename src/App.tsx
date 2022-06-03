@@ -5,12 +5,13 @@
  * @fileoverview  Root component for Recipe Repository Application.
  */
 
-import React, { ReactElement, useEffect, useState } from 'react'
-import { UserLogin } from './components/login'
+import React, { ReactElement, useState } from 'react'
+import UserLogin from './components/login'
+import UserRegister from './components/registration'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 
 import Header from './components/header'
-import { Code, GetAuth, Revoke } from './auth/auth'
+import { GetAuth, IUser, Revoke } from './auth/auth'
 import { Collection } from './components/collection'
 
 export const API_BASE: string = 'https://id1000096681-laveat1.herokuapp.com'
@@ -73,6 +74,10 @@ const App = (): ReactElement => {
           ) : (
             <>
               <Route path="/login" element={<UserLogin Login={Login} />} />
+              <Route
+                path="/register"
+                element={<UserRegister Login={Login} />}
+              />
             </>
           )}
         </Routes>

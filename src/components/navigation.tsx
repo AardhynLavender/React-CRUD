@@ -42,6 +42,9 @@ const Navigation = (props: IProps): ReactElement => {
           <NavItem>
             <NavLink href="/login">Login</NavLink>
           </NavItem>
+          <NavItem>
+            <NavLink href="/register">Sign Up</NavLink>
+          </NavItem>
         </>
       )}
     </Nav>
