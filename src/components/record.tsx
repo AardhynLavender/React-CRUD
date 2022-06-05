@@ -7,6 +7,7 @@
 
 import React, { ReactElement, useState } from 'react'
 import { Button } from 'reactstrap'
+import { Stringify } from '../util/collection'
 import { Interaction } from '../util/Interaction'
 import { IRecord } from '../util/record'
 import { ToSentenceCase } from '../util/string'
@@ -29,25 +30,8 @@ interface IProps {
 const Record = (props: IProps): ReactElement => {
   const { id, attributes, record, mode, Editing, HandleDelete } = props
 
-  // get headings from attributes
-  const attributeHeadings: Array<string> = attributes.map(
-    (attribute: string | Array<string>) =>
-      typeof attribute === 'string' ? attribute : attribute[0]
-  )
-
   const [RecordState, SetRecordState] = useState<IRecord>(record)
   const [Error, SetError] = useState<string>()
-
-  /**
-   * determines the best way to display arbitrary data in string form
-   * @param data to determine
-   * @returns stringified data
-   */
-  const Stringify = (data: any): string => {
-    if (Array.isArray(data)) return data.join('\n')
-    else if (data) return ToSentenceCase(data)
-    else return ''
-  }
 
   /**
    * Called when Edit is clicked
@@ -67,7 +51,7 @@ const Record = (props: IProps): ReactElement => {
             const { name, message, path } = errorSet[attribute]
             alert(
               // for now... just use vanilla alert
-              `${name} with ${path.split('.')[0]}\n\n${message}`
+              `${name} with ${path ? path.split('.')[0] : ''}\n\n${message}`
             )
           })
         }
@@ -103,7 +87,7 @@ const Record = (props: IProps): ReactElement => {
     <tr>
       <td>{id}</td>
       {/* Display attributes */}
-      {attributeHeadings.map((attribute: string, key: number) => (
+      {attributes.map((attribute: string, key: number) => (
         <>
           {Editing === id && mode === Interaction.Edit ? (
             <td key={key}>

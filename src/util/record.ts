@@ -1,4 +1,4 @@
 export interface IRecord extends Object {
-  _id: string
+  _id?: string
   [attribute: string]: any
 }

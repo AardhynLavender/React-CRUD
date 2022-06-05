@@ -48,6 +48,7 @@ const App = (): ReactElement => {
       'condiments',
       'utensils',
       'method',
+      'duration',
       'results',
     ],
     recipes: ['name', 'author', 'components', 'detail'],

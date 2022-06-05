@@ -14,6 +14,7 @@ import { AxiosResponse } from 'axios'
  */
 export enum Code {
   Success = 200,
+  Created = 201,
   Unauthorized = 401,
   NotFound = 404,
   Error = 500,

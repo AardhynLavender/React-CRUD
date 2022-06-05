@@ -22,6 +22,7 @@ import {
   DEFAULT_PAGE_SIZE,
 } from './pagination'
 import { useParams } from 'react-router-dom'
+import NewRecord from './newRecord'
 
 /**
  * A specific error
@@ -29,7 +30,7 @@ import { useParams } from 'react-router-dom'
 interface IError {
   name: string
   message: string
-  path: string
+  path?: string
 }
 
 /**
@@ -146,6 +147,41 @@ export const Collection = (props: IProps): ReactElement => {
    * @param id (local) of item to delete
    * @returns success of operation
    */
+  const PushRecord = async (
+    record: IRecord
+  ): Promise<IErrorSet | undefined> => {
+    try {
+      if (!record) throw 'mutation was undefined!'
+
+      const response: AxiosResponse = await Axios.post(
+        API_COLLECTION_BASE,
+        record,
+        {
+          headers: {
+            authorization: GetAuth() || '',
+          },
+        }
+      )
+
+      fetch() // refresh rendered collection data
+      if (response.status !== Code.Created)
+        throw 'response status was not successful!'
+    } catch (error: any) {
+      // general set of errors
+      const errorSet: IErrorSet | undefined = error.response.data.message
+        .errors || {
+        error: error.response.data.message,
+      }
+
+      console.error(error)
+      return errorSet
+    }
+  }
+  /**
+   * Promise to update a record in the collection
+   * @param id (local) of item to delete
+   * @returns success of operation
+   */
   const MutateRecord = async (
     id: number,
     mutated: IRecord
@@ -174,7 +210,8 @@ export const Collection = (props: IProps): ReactElement => {
         .errors || {
         error: error.response.data.message,
       }
-      console.log(error)
+
+      console.error(error)
       return errorSet
     }
   }
@@ -255,6 +292,8 @@ export const Collection = (props: IProps): ReactElement => {
           HandleUpdate={MutateRecord}
         />
       )}
+      <br />
+      <NewRecord attributes={props.schema} pushRecord={PushRecord} />
     </section>
   )
 }
