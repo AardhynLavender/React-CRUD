@@ -3,7 +3,7 @@
  * @version       1.0.0
  *
  * @fileoverview  Login form to authenticate a user and
- *                permit access to the system
+ *                permit access to the systems routes
  */
 
 import React, {
@@ -17,6 +17,9 @@ import { Button, Alert, Form, FormGroup, Input } from 'reactstrap'
 import { API_BASE } from '../App'
 import { Authenticate, AuthState, GetAuth } from '../auth/auth'
 
+/**
+ * Properties for the Login component
+ */
 interface IProps {
   Login: () => void
 }
@@ -54,6 +57,10 @@ const Login = (props: IProps): ReactElement => {
     else SetInscrutable(true)
   }
 
+  /**
+   * Invoked when a Form is submitted
+   * @param e form event
+   */
   const handleSubmit: FormEventHandler<HTMLFormElement> = (
     e: SyntheticEvent
   ): void => {
@@ -71,7 +78,7 @@ const Login = (props: IProps): ReactElement => {
             name="email"
             placeholder="Email"
             value={Email}
-            onChange={(e): void => SetEmail(e.target.value)}
+            onChange={({ target }): void => SetEmail(target.value)}
             required
           />
         </FormGroup>
@@ -81,7 +88,7 @@ const Login = (props: IProps): ReactElement => {
             name="password"
             placeholder="Password"
             value={Password}
-            onChange={(e): void => SetPassword(e.target.value)}
+            onChange={({ target }): void => SetPassword(target.value)}
             required
           />
         </FormGroup>

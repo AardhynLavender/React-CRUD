@@ -7,12 +7,14 @@
 
 import React, { ReactElement, useState } from 'react'
 import { Button } from 'reactstrap'
-import { Stringify } from '../util/collection'
 import { Interaction } from '../util/Interaction'
 import { IRecord } from '../util/record'
-import { ToSentenceCase } from '../util/string'
+import { Stringify } from '../util/string'
 import { IErrorSet } from './collection'
 
+/**
+ * Properties for the Record component
+ */
 interface IProps {
   id: number
   attributes: Array<string>
@@ -27,6 +29,11 @@ interface IProps {
   HandleDelete: (id: number) => Promise<boolean>
 }
 
+/**
+ * Displays a mutable record with edit and delete buttons
+ * @param props properties
+ * @returns a mutable record component
+ */
 const Record = (props: IProps): ReactElement => {
   const { id, attributes, record, mode, Editing, HandleDelete } = props
 
@@ -41,6 +48,9 @@ const Record = (props: IProps): ReactElement => {
     props.SetEditing(id)
   }
 
+  /**
+   * Handles clicking the 'commit' button
+   */
   const HandleCommit = (): void => {
     props
       .HandleCommit(id, RecordState)

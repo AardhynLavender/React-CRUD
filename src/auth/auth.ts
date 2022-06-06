@@ -8,20 +8,10 @@
 import axios from 'axios'
 import { API_BASE } from '../App'
 import { AxiosResponse } from 'axios'
+import { Code } from '../util/code'
 
 /**
- * Relevant HTTP codes
- */
-export enum Code {
-  Success = 200,
-  Created = 201,
-  Unauthorized = 401,
-  NotFound = 404,
-  Error = 500,
-}
-
-/**
- * an object used for authentication
+ * An object used for authentication
  */
 export interface ICredentials {
   username?: string
@@ -29,13 +19,16 @@ export interface ICredentials {
   email?: string
 }
 
+/**
+ * Extends credentials with a first and last name
+ */
 export interface IUser extends ICredentials {
   first?: string
   last?: string
 }
 
 /**
- * the resulting state of a given authentication event
+ * The resulting state of a given authentication event
  */
 export enum AuthState {
   Valid,
@@ -65,7 +58,7 @@ export const Authenticate = async (
 }
 
 /**
- * Revokes the session authentication
+ * Revoke session authentication
  */
 export const Revoke = async (): Promise<void> => {
   try {
@@ -104,8 +97,8 @@ export const Register = async (user: IUser): Promise<AuthState> => {
 }
 
 /**
- * Get authentication if it exists
- * @returns the bearer token if it exists
+ * Get authentication if existing
+ * @returns the bearer token or null
  */
 export const GetAuth = (): string | null => {
   const prefix: string = 'Bearer '

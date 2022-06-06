@@ -2,19 +2,24 @@
  * @name            Navigation
  * @version         1.0.0
  *
- * @fileoverview    The Navigation component, groups a set of links together
+ * @fileoverview    Provides a component to group stateful links together
  */
 
 import React, { ReactElement } from 'react'
 import { Nav, NavItem, NavLink } from 'reactstrap'
 
+/**
+ * Properties for the Navigation component
+ */
 interface IProps {
   authenticated: boolean
   logout: () => void
 }
 
 /**
- *  Navigation links auth dependant
+ * displays links based on auth state
+ * @param props component properties
+ * @returns a navigation bar
  */
 const Navigation = (props: IProps): ReactElement => {
   return (

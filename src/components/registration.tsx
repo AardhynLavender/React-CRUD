@@ -50,7 +50,7 @@ const Registration = (props: IProps): ReactElement => {
   }
 
   /**
-   * Called when form is submitted
+   * Invoked when form is submitted
    * @param e click event with submit button
    */
   const HandleSubmit: FormEventHandler<HTMLFormElement> = (

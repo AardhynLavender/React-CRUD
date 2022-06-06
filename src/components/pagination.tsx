@@ -13,18 +13,7 @@ import React, {
   useEffect,
   useState,
 } from 'react'
-import {
-  Button,
-  Input,
-  Pagination,
-  PaginationItem,
-  PaginationLink,
-} from 'reactstrap'
-
-/**
- * simple typedef for useState set hook
- */
-type Setter = Dispatch<SetStateAction<number>>
+import { Button, Input } from 'reactstrap'
 
 /**
  * Generate a query param for pagination
@@ -39,11 +28,14 @@ export const Paginate = (size: number, page: number): string =>
  * PaginationController properties
  */
 interface IProps {
-  initialState: IPageHandle
-  SetState: (state: IPageHandle) => void
+  initialState: IPaginationState
+  SetState: (state: IPaginationState) => void
 }
 
-export interface IPageHandle {
+/**
+ * Defines a pagination state
+ */
+export interface IPaginationState {
   page: number
   size: number
 }
@@ -57,7 +49,7 @@ export const DEFAULT_PAGE: number = 0
  * @param props component properties
  * @returns A pagination controller component
  */
-export const PaginationController = (props: IProps): ReactElement => {
+const PaginationController = (props: IProps): ReactElement => {
   const [Page, SetPage] = useState<number>(props.initialState.page)
   const [PageSize, SetPageSize] = useState<number>(props.initialState.size)
 
@@ -73,6 +65,10 @@ export const PaginationController = (props: IProps): ReactElement => {
     }
   }
 
+  /**
+   * Handles a page controller click event
+   * @param step page translation increment
+   */
   const HandleClick = (step: number): void => {
     const change: number = Page + step
     if (change >= 0 && change <= MAX_PAGE_SIZE) {
@@ -80,6 +76,9 @@ export const PaginationController = (props: IProps): ReactElement => {
     }
   }
 
+  /**
+   * Update the pagination state when related state mutates
+   */
   useEffect(
     () => props.SetState({ page: Page, size: PageSize }),
     [Page, PageSize]
@@ -108,3 +107,5 @@ export const PaginationController = (props: IProps): ReactElement => {
     </>
   )
 }
+
+export default PaginationController

@@ -11,6 +11,9 @@ import { Collapse, Navbar, NavbarToggler, NavbarBrand } from 'reactstrap'
 
 import Navigation from './navigation'
 
+/**
+ * properties for the Application component
+ */
 interface IProps {
   authenticated: boolean
   logout: () => void

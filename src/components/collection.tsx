@@ -9,20 +9,20 @@ import React, { ReactElement, useEffect, useState } from 'react'
 import TableView from './table'
 import Axios, { AxiosResponse } from 'axios'
 import { API_BASE } from '../App'
-import { Code, GetAuth } from '../auth/auth'
+import { GetAuth } from '../auth/auth'
 import { Alert, Button, ButtonGroup } from 'reactstrap'
 import { ToSentenceCase } from '../util/string'
 import { Interaction } from '../util/Interaction'
 import { IRecord } from '../util/record'
-import {
+import PaginationController, {
   Paginate,
-  IPageHandle,
-  PaginationController,
+  IPaginationState,
   DEFAULT_PAGE,
   DEFAULT_PAGE_SIZE,
 } from './pagination'
 import { useParams } from 'react-router-dom'
 import NewRecord from './newRecord'
+import { Code } from '../util/code'
 
 /**
  * A specific error
@@ -34,7 +34,7 @@ interface IError {
 }
 
 /**
- * A set of errors returned from a PUT
+ * A set of errors indexed by the associated (mongoDB) attribute
  */
 export interface IErrorSet {
   [attribute: string]: IError
@@ -49,9 +49,9 @@ interface IProps {
 }
 
 /**
- *
+ * A CRUD interface for a collection
  * @param props provided the collection name and a desired schema
- * @returns
+ * @returns a CRUD interface
  */
 export const Collection = (props: IProps): ReactElement => {
   const [Mode, SetMode] = useState<Interaction>(Interaction.Visual)
@@ -65,7 +65,7 @@ export const Collection = (props: IProps): ReactElement => {
   /**
    * Read data from API
    */
-  const fetch = (page?: number, size?: number) => {
+  const Fetch = (page?: number, size?: number) => {
     // sequential id for document
     const parsedID: number | undefined = parseInt(id || '')
 
@@ -112,11 +112,12 @@ export const Collection = (props: IProps): ReactElement => {
 
   /**
    * Promise to delete the document associated with the nth
-   * (id) record on the display
+   * record on the display
    * @param id (local) of item to delete
    * @returns success of operation
    */
   const DeleteRecord = async (id: number): Promise<boolean> => {
+    // extrapolate document hash (_id)
     const _id: string | undefined = Records ? Records[id]._id : undefined
     try {
       if (_id) {
@@ -130,7 +131,7 @@ export const Collection = (props: IProps): ReactElement => {
         )
 
         if (response.status === Code.Success) {
-          fetch() // refresh rendered collection data
+          Fetch() // refresh rendered collection data
           return true
         }
       }
@@ -163,7 +164,7 @@ export const Collection = (props: IProps): ReactElement => {
         }
       )
 
-      fetch() // refresh rendered collection data
+      Fetch() // refresh rendered collection data
       if (response.status !== Code.Created)
         throw 'response status was not successful!'
     } catch (error: any) {
@@ -187,10 +188,9 @@ export const Collection = (props: IProps): ReactElement => {
     mutated: IRecord
   ): Promise<IErrorSet | undefined> => {
     try {
-      const _id: string | undefined = Records ? Records[id]._id : undefined
-
       if (!mutated) throw 'mutation was undefined!'
 
+      const _id: string | undefined = Records ? Records[id]._id : undefined
       const response: AxiosResponse = await Axios.put(
         API_COLLECTION_BASE + _id,
         mutated,
@@ -201,7 +201,7 @@ export const Collection = (props: IProps): ReactElement => {
         }
       )
 
-      fetch() // refresh rendered collection data
+      Fetch() // refresh rendered collection data
       if (response.status !== Code.Success)
         throw 'response status was not successful!'
     } catch (error: any) {
@@ -219,7 +219,7 @@ export const Collection = (props: IProps): ReactElement => {
   /**
    * Fetch when component did mount
    */
-  useEffect(() => fetch(), [])
+  useEffect(() => Fetch(), [])
 
   /**
    * Toggle the interaction to Edit mode
@@ -255,8 +255,8 @@ export const Collection = (props: IProps): ReactElement => {
         <h2 style={{ marginBlock: '1em' }}>{ToSentenceCase(props.name)}</h2>
         <PaginationController
           initialState={{ page: DEFAULT_PAGE, size: DEFAULT_PAGE_SIZE }}
-          SetState={(state: IPageHandle) => {
-            fetch(state.page, state.size)
+          SetState={(state: IPaginationState) => {
+            Fetch(state.page, state.size)
           }}
         />
         <ButtonGroup style={{ width: '150px' }}>

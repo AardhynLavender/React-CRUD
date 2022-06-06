@@ -5,7 +5,7 @@
  * @fileoverview    A component to display data in a table
  */
 
-import React, { ReactElement, useState, useEffect } from 'react'
+import React, { ReactElement, useState } from 'react'
 import { Alert, Spinner, Table } from 'reactstrap'
 import { Interaction } from '../util/Interaction'
 import { ToSentenceCase } from '../util/string'
@@ -14,7 +14,7 @@ import Record from './record'
 import { IErrorSet } from './collection'
 
 /**
- * Properties for this Component
+ * Properties for the TableView component
  */
 interface IProps {
   name?: string
@@ -31,14 +31,14 @@ interface IProps {
  * @returns Table View Component
  */
 const TableView = (props: IProps): ReactElement => {
-  const attributes: Array<string> = props.attributes
-  const records: Array<IRecord> | undefined = props.records
+  const { attributes, records } = props
 
   const [Editing, SetEditing] = useState<number | null>(null)
 
   /**
    * Prompt user for a delete request
    * @param id of record to request deletion
+   * @returns promises to determine user input
    */
   const HandleDelete = (id: number): Promise<boolean> => {
     if (

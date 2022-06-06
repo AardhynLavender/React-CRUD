@@ -2,7 +2,7 @@
  * @name            Record
  * @version         1.0.0
  *
- * @fileoverview    Displays a mutable record of data with callback arguments
+ * @fileoverview    A component to provide collection input functionality
  */
 
 import React, {
@@ -16,13 +16,16 @@ import { IErrorSet } from './collection'
 import { ToSentenceCase } from '../util/string'
 import { Button, Form, Table } from 'reactstrap'
 
+/**
+ * Properties for the NewRecord component
+ */
 interface IProps {
   attributes: Array<string>
   pushRecord: (record: IRecord) => Promise<IErrorSet | undefined>
 }
 
 /**
- *
+ * A form that adds new records to a collection
  * @param props properties for NewRecord Component
  * @returns a new Record form component
  */
@@ -33,7 +36,7 @@ const NewRecord = (props: IProps): ReactElement => {
   const [Error, SetError] = useState<string>()
 
   /**
-   * Called when submit button is clicked
+   * Invoked when a Form is submitted
    */
   const HandleSubmit: FormEventHandler<HTMLFormElement> = (
     e: SyntheticEvent
