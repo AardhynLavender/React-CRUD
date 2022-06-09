@@ -12,7 +12,7 @@ import React, {
   useState,
 } from 'react'
 import { IRecord } from '../util/record'
-import { IErrorSet } from './collection'
+import { IErrorSet } from '../util/error'
 import { ToSentenceCase } from '../util/string'
 import { Button, Form, Table } from 'reactstrap'
 
