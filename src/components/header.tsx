@@ -2,7 +2,7 @@
  * @name          Header
  * @version       1.0.0
  *
- * @fileoverview  Contains the header component which houses the
+ * @fileoverview  Contains the header component to house the
  *                title and navigation components.
  */
 
@@ -12,21 +12,34 @@ import { Collapse, Navbar, NavbarToggler, NavbarBrand } from 'reactstrap'
 import Navigation from './navigation'
 
 /**
- * Application Component, root of component tree
+ * properties for the Application component
  */
-const Header = (): ReactElement => {
+interface IProps {
+  authenticated: boolean
+  logout: () => void
+}
+
+/**
+ * Application header component
+ */
+const Header = (props: IProps): ReactElement => {
   const title: string = 'Recipe Repository'
   const [open, setOpen] = useState<boolean>(false)
   const toggle = (): void => setOpen(!open)
 
   return (
-    <Navbar color="light" light expand="lg">
-      <NavbarBrand href="/">{title}</NavbarBrand>
-      <NavbarToggler onClick={toggle} />
-      <Collapse isOpen={open} navbar>
-        <Navigation />
-      </Collapse>
-    </Navbar>
+    <header>
+      <Navbar color="light" light expand="lg">
+        <NavbarBrand href="/">{title}</NavbarBrand>
+        <NavbarToggler onClick={toggle} />
+        <Collapse isOpen={open} navbar>
+          <Navigation
+            authenticated={props.authenticated}
+            logout={props.logout}
+          />
+        </Collapse>
+      </Navbar>
+    </header>
   )
 }
 
