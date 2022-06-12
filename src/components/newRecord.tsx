@@ -13,8 +13,9 @@ import React, {
 } from 'react'
 import { IRecord } from '../util/record'
 import { IErrorSet } from '../util/error'
+import ErrorMessage from './error'
 import { ToSentenceCase } from '../util/string'
-import { Button, Form, Table } from 'reactstrap'
+import { Button, Form, FormGroup, Table } from 'reactstrap'
 
 /**
  * Properties for the NewRecord component
@@ -33,7 +34,7 @@ const NewRecord = (props: IProps): ReactElement => {
   const { attributes } = props
 
   const [RecordState, SetRecordState] = useState<IRecord>({})
-  const [Error, SetError] = useState<string>()
+  const [Error, SetError] = useState<IErrorSet | null>(null)
 
   /**
    * Invoked when a Form is submitted
@@ -43,15 +44,9 @@ const NewRecord = (props: IProps): ReactElement => {
   ): void => {
     e.preventDefault()
     props.pushRecord(RecordState).then((errorSet: IErrorSet | undefined) => {
-      if (errorSet) {
-        Object.keys(errorSet).forEach((attribute: string) => {
-          const { name, message, path } = errorSet[attribute]
-          alert(
-            // for now... just use vanilla alert
-            `${name} with ${path ? path.split('.')[0] : ''}\n\n${message}`
-          )
-        })
-      }
+      if (errorSet)
+        Object.keys(errorSet).forEach((attribute: string) => SetError(errorSet))
+      else SetError(null)
     })
   }
 
@@ -87,21 +82,24 @@ const NewRecord = (props: IProps): ReactElement => {
         onSubmit={HandleSubmit}
         style={{
           width: '100%',
-          maxWidth: 600,
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '1em',
-          marginBlock: '1em',
+          maxWidth: 700,
         }}
       >
         {attributes.map((attribute: string, key: number) => (
-          <input
-            onChange={({ target }) => HandleChange(target.value, attribute)}
-            placeholder={ToSentenceCase(attribute)}
-            value={RecordState[attribute]}
-          />
+          <FormGroup key={key}>
+            <input
+              onChange={({ target }) => HandleChange(target.value, attribute)}
+              placeholder={ToSentenceCase(attribute)}
+              value={RecordState[attribute]}
+            />
+            {Error ? (
+              <ErrorMessage error={Error} attribute={attribute} />
+            ) : (
+              <></>
+            )}
+          </FormGroup>
         ))}
-        <Button style={{ width: '5em' }}>Submit</Button>
+        <Button>Submit</Button>
       </Form>
     </>
   )

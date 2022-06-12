@@ -6,11 +6,12 @@
  */
 
 import React, { ReactElement, useState } from 'react'
-import { Alert, Button } from 'reactstrap'
+import { Button } from 'reactstrap'
 import Interaction from '../util/interaction'
 import { IRecord } from '../util/record'
 import { Stringify } from '../util/string'
 import { IErrorSet } from '../util/error'
+import ErrorMessage from './error'
 
 /**
  * Properties for the Record component
@@ -101,26 +102,11 @@ const Record = (props: IProps): ReactElement => {
                 onChange={({ target }) => HandleChange(target.value, attribute)}
                 value={RecordState[attribute]}
               />
-              <div style={{ display: 'flex', flexDirection: 'column' }}>
-                {Error && Object.keys(Error).includes(attribute) ? (
-                  <>
-                    <Alert
-                      color={
-                        Error[attribute].name === 'CastError'
-                          ? 'warning'
-                          : 'danger'
-                      }
-                      style={{ marginTop: '1em' }}
-                    >
-                      <b>{Error[attribute].name}</b>
-                      <br />
-                      <em>{Error[attribute].message}</em>
-                    </Alert>
-                  </>
-                ) : (
-                  <></>
-                )}
-              </div>
+              {Error ? (
+                <ErrorMessage attribute={attribute} error={Error} />
+              ) : (
+                <></>
+              )}
             </td>
           ) : (
             <td key={key}>{Stringify(record[attribute])}</td>
