@@ -7,7 +7,7 @@
 
 import React, { ReactElement, useState } from 'react'
 import { Alert, Button } from 'reactstrap'
-import { Interaction } from '../util/interaction'
+import Interaction from '../util/interaction'
 import { IRecord } from '../util/record'
 import { Stringify } from '../util/string'
 import { IErrorSet } from '../util/error'
@@ -44,7 +44,7 @@ const Record = (props: IProps): ReactElement => {
    * Called when Edit is clicked
    */
   const HandleMutate = (): void => {
-    SetError(null);
+    SetError(null)
     SetRecordState(record)
     props.SetEditing(id)
   }
@@ -57,7 +57,9 @@ const Record = (props: IProps): ReactElement => {
       .HandleCommit(id, RecordState)
       .then((errorSet: IErrorSet | undefined) => {
         if (errorSet)
-          Object.keys(errorSet).forEach((attribute: string) => SetError(errorSet))
+          Object.keys(errorSet).forEach((attribute: string) =>
+            SetError(errorSet)
+          )
         else props.SetEditing(null)
       })
   }
@@ -99,23 +101,29 @@ const Record = (props: IProps): ReactElement => {
                 onChange={({ target }) => HandleChange(target.value, attribute)}
                 value={RecordState[attribute]}
               />
-              <div
-                style={{ display : 'flex', flexDirection: "column" }}
-              >
-                { Error && Object.keys(Error).includes(attribute) ? <>
-                  <Alert color={Error[attribute].name === 'CastError' ? "warning" : "danger"} style={{ marginTop: 'auto'}}>
-                    <b>{Error[attribute].name}</b>
-                    <br/>
-                    <em>{Error[attribute].message}</em>
-                  </Alert>
-                </> : <></>}
+              <div style={{ display: 'flex', flexDirection: 'column' }}>
+                {Error && Object.keys(Error).includes(attribute) ? (
+                  <>
+                    <Alert
+                      color={
+                        Error[attribute].name === 'CastError'
+                          ? 'warning'
+                          : 'danger'
+                      }
+                      style={{ marginTop: '1em' }}
+                    >
+                      <b>{Error[attribute].name}</b>
+                      <br />
+                      <em>{Error[attribute].message}</em>
+                    </Alert>
+                  </>
+                ) : (
+                  <></>
+                )}
               </div>
             </td>
-            ) : (
-              <td key={key} 
-              >
-              {Stringify(record[attribute])}
-            </td>
+          ) : (
+            <td key={key}>{Stringify(record[attribute])}</td>
           )}
         </>
       ))}

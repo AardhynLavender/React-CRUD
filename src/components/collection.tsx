@@ -12,7 +12,7 @@ import { API_BASE } from '../App'
 import { GetAuth } from '../auth/auth'
 import { Alert, Button, ButtonGroup } from 'reactstrap'
 import { ToSentenceCase } from '../util/string'
-import { Interaction } from '../util/interaction'
+import Interaction from '../util/interaction'
 import { IRecord } from '../util/record'
 import PaginationController, {
   Paginate,
@@ -148,13 +148,13 @@ export const Collection = (props: IProps): ReactElement => {
             authorization: GetAuth() || '',
           },
         }
-        )
-        
-        Fetch() // refresh rendered collection data
-        if (response.status !== Code.Created)
+      )
+
+      Fetch() // refresh rendered collection data
+      if (response.status !== Code.Created)
         throw 'response status was not successful!'
-      } catch (error: any) {
-        return HandleError(error);
+    } catch (error: any) {
+      return HandleError(error)
     }
   }
   /**
@@ -184,9 +184,8 @@ export const Collection = (props: IProps): ReactElement => {
       if (response.status !== Code.Success)
         throw 'response status was not successful!'
     } catch (error: any) {
-      return HandleError(error);
+      return HandleError(error)
     }
-
   }
 
   /**

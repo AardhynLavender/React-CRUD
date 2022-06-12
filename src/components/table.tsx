@@ -7,7 +7,7 @@
 
 import React, { ReactElement, useState } from 'react'
 import { Alert, Spinner, Table } from 'reactstrap'
-import { Interaction } from '../util/interaction'
+import Interaction from '../util/interaction'
 import { ToSentenceCase } from '../util/string'
 import { IRecord } from '../util/record'
 import Record from './record'
