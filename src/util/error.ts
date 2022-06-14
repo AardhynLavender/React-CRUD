@@ -47,7 +47,5 @@ export const HandleError = (error: any): IErrorSet | undefined => {
           },
         })
 
-  console.log(errorSet)
-
   return errorSet
 }
