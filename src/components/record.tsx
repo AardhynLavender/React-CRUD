@@ -7,10 +7,11 @@
 
 import React, { ReactElement, useState } from 'react'
 import { Button } from 'reactstrap'
-import { Interaction } from '../util/Interaction'
+import Interaction from '../util/interaction'
 import { IRecord } from '../util/record'
 import { Stringify } from '../util/string'
-import { IErrorSet } from './collection'
+import { IErrorSet } from '../util/error'
+import ErrorMessage from './error'
 
 /**
  * Properties for the Record component
@@ -38,12 +39,13 @@ const Record = (props: IProps): ReactElement => {
   const { id, attributes, record, mode, Editing, HandleDelete } = props
 
   const [RecordState, SetRecordState] = useState<IRecord>(record)
-  const [Error, SetError] = useState<string>()
+  const [Error, SetError] = useState<IErrorSet | null>(null)
 
   /**
    * Called when Edit is clicked
    */
   const HandleMutate = (): void => {
+    SetError(null)
     SetRecordState(record)
     props.SetEditing(id)
   }
@@ -55,16 +57,11 @@ const Record = (props: IProps): ReactElement => {
     props
       .HandleCommit(id, RecordState)
       .then((errorSet: IErrorSet | undefined) => {
-        props.SetEditing(null)
-        if (errorSet) {
-          Object.keys(errorSet).forEach((attribute: string) => {
-            const { name, message, path } = errorSet[attribute]
-            alert(
-              // for now... just use vanilla alert
-              `${name} with ${path ? path.split('.')[0] : ''}\n\n${message}`
-            )
-          })
-        }
+        if (errorSet)
+          Object.keys(errorSet).forEach((attribute: string) =>
+            SetError(errorSet)
+          )
+        else props.SetEditing(null)
       })
   }
 
@@ -105,6 +102,11 @@ const Record = (props: IProps): ReactElement => {
                 onChange={({ target }) => HandleChange(target.value, attribute)}
                 value={RecordState[attribute]}
               />
+              {Error ? (
+                <ErrorMessage attribute={attribute} error={Error} />
+              ) : (
+                <></>
+              )}
             </td>
           ) : (
             <td key={key}>{Stringify(record[attribute])}</td>

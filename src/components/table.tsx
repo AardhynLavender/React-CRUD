@@ -7,11 +7,11 @@
 
 import React, { ReactElement, useState } from 'react'
 import { Alert, Spinner, Table } from 'reactstrap'
-import { Interaction } from '../util/Interaction'
+import Interaction from '../util/interaction'
 import { ToSentenceCase } from '../util/string'
 import { IRecord } from '../util/record'
 import Record from './record'
-import { IErrorSet } from './collection'
+import { IErrorSet } from '../util/error'
 
 /**
  * Properties for the TableView component

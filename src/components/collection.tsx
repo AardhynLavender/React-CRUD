@@ -12,7 +12,7 @@ import { API_BASE } from '../App'
 import { GetAuth } from '../auth/auth'
 import { Alert, Button, ButtonGroup } from 'reactstrap'
 import { ToSentenceCase } from '../util/string'
-import { Interaction } from '../util/Interaction'
+import Interaction from '../util/interaction'
 import { IRecord } from '../util/record'
 import PaginationController, {
   Paginate,
@@ -23,22 +23,8 @@ import PaginationController, {
 import { useParams } from 'react-router-dom'
 import NewRecord from './newRecord'
 import { Code } from '../util/code'
-
-/**
- * A specific error
- */
-interface IError {
-  name: string
-  message: string
-  path?: string
-}
-
-/**
- * A set of errors indexed by the associated (mongoDB) attribute
- */
-export interface IErrorSet {
-  [attribute: string]: IError
-}
+import { HandleError, IErrorSet } from '../util/error'
+import path from 'path'
 
 /**
  * Properties for this Component
@@ -168,14 +154,7 @@ export const Collection = (props: IProps): ReactElement => {
       if (response.status !== Code.Created)
         throw 'response status was not successful!'
     } catch (error: any) {
-      // general set of errors
-      const errorSet: IErrorSet | undefined = error.response.data.message
-        .errors || {
-        error: error.response.data.message,
-      }
-
-      console.error(error)
-      return errorSet
+      return HandleError(error)
     }
   }
   /**
@@ -205,14 +184,7 @@ export const Collection = (props: IProps): ReactElement => {
       if (response.status !== Code.Success)
         throw 'response status was not successful!'
     } catch (error: any) {
-      // general set of errors
-      const errorSet: IErrorSet | undefined = error.response.data.message
-        .errors || {
-        error: error.response.data.message,
-      }
-
-      console.error(error)
-      return errorSet
+      return HandleError(error)
     }
   }
 

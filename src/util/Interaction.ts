@@ -2,14 +2,16 @@
  * @name          Interaction
  * @version       1.0.0
  *
- * @fileoverview  Describes a state of interaction  
+ * @fileoverview  Describes a state of interaction
  */
 
 /*
  * Describes a state of interaction
  */
-export enum Interaction {
+enum Interaction {
   Visual,
   Edit,
   Delete,
 }
+
+export default Interaction

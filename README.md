@@ -58,7 +58,24 @@ Alternatively, configure your text editor to format on save if possible.
 
 ## User Interface Testing ( Cypress )
 
-_tests have not yet been configured_
+For tests to function. Please run the program in your local development environment ( see **Local Configuration and Execution** )
+
+In a seperate _shell session_ or _screen_, launch the cypress testing interface with
+
+```shell
+npm run cypress
+```
+
+From the testing interface you can run the configured tests.
+
+| Test     | Description                                               |
+| :------- | :-------------------------------------------------------- |
+| Auth     | Logs in with a registered users credentials then logs out |
+| Register | Registers a new user with valid credietials then logs out |
+
+> Please note inital tests _may_ fail due to a timeout. The API runs on free Heroku Dynamos which take a while to start up from cold. As such slow startup would not exist in a production application, I felt the default 4000ms timeout length was appropriate.
+
+> As no client is able to `DELETE` Users for the Database, any sucessfull Register will prevent subsequent Registers from succeeding due to a Atlas unique constraint failure. Please change the test's `username` and `email` before each subsequest Register.
 
 ## Deployment ( Heroku )
 
