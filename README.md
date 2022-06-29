@@ -1,12 +1,10 @@
 # IN607001 React CRUD - Aardhyn Lavender
 
-Front-end Typescript React CRUD application for interfacing with the `intro-app-dev-2022-project-1-node-js-rest-api`.
-
-You can view the documentation for this API [here](https://documenter.getpostman.com/view/18456662/Uyr4HzQf)
+Front-end Typescript React CRUD application for my second year BIT assignment, awarding a grade of 95.76%
 
 ## Live Application
 
-The deployed application can be found [here](https://id1000096681-laveat1-react.herokuapp.com/) at the following URL
+The deployed application can be found [here](https://id1000096681-laveat1-react.herokuapp.com/) or the following URL
 
 ```plaintext
 https://id1000096681-laveat1-react.herokuapp.com/
